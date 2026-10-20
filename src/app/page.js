@@ -13,24 +13,24 @@ export default function Home() {
   const [drives, setDrives] = useState([]);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [fetchError, setFetchError] = useState("");
-  useEffect(()=>{
-    async function fetchDrives(){
-      setFetchLoading(true)
-      setFetchError("")
-      try{
-        const response = await fetch("/api/drives")
-        if(response.ok){
-          throw new Error("Unable to Load Placement Drives")
-        }
-        const data = await response.json()
-        setDrives(data)
-      }catch{
-        setFetchError("Unable to load placement drives. Please try again.")
-      }finally{
-        setFetchLoading(false) 
+  async function fetchDrives() {
+    setFetchLoading(true)
+    setFetchError("")
+    try {
+      const response = await fetch("/api/drives")
+      if (!response.ok) {
+        throw new Error("Unable to Load Placement Drives")
       }
+      const data = await response.json()
+      setDrives(data)
+    } catch {
+      setFetchError("Unable to load placement drives. Please try again.")
+    } finally {
+      setFetchLoading(false)
+    }
   }
-  fetchDrives()
+  useEffect(()=>{
+    fetchDrives()
 },[]);
   async function handleSubmit(event) {
     event.preventDefault();
