@@ -12,21 +12,20 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [drives, setDrives] = useState([]);
   const [fetchLoading, setFetchLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
   useEffect(()=>{
     async function fetchDrives(){
       setFetchLoading(true)
-      setMessage("")
+      setFetchError("")
       try{
         const response = await fetch("/api/drives")
         if(response.ok){
-          const data = await response.json()
-          setDrives(data)
+          throw new Error("Unable to Load Placement Drives")
         }
-        else{
-          setMessage("Something Went Wrong! Try Again!")
-        }
+        const data = await response.json()
+        setDrives(data)
       }catch{
-        setMessage("Unable to load placement drives. Please try again.")
+        setFetchError("Unable to load placement drives. Please try again.")
       }finally{
         setFetchLoading(false) 
       }
@@ -313,7 +312,22 @@ export default function Home() {
                   Fetching the latest records...
                 </p>
               </div>
-            ) : drives.length === 0 ? (
+            ) : fetchError ? (
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
+                <p className="font-semibold text-red-700">
+                  Unable to load placement drives
+                </p>
+                <p className="mt-2 text-sm text-red-600">
+                  {fetchError}
+                </p>
+                <button
+                  type="button"
+                  onClick={fetchDrives}
+                  className="mt-4 rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
+                >
+                  Try again
+                </button>
+              </div>) : drives.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-2xl">
                   ▤

@@ -21,11 +21,40 @@ export async function GET(){
 
 export async function POST(request){
     try{
-        const data = await request.json();
-        const date = new Date(data.driveDate);
-        if (!data.companyName || !data.role || isNaN(date.getTime()) || !data.eligibleBranch){
+        let data;
+
+        try {
+            data = await request.json();
+        } catch {
             return Response.json(
-                { error: "Required fields are missing or the date is invalid" },
+                { error: "Invalid JSON request body" },
+                { status: 400 }
+            );
+        }
+
+        if (!data || typeof data !== "object" || Array.isArray(data)) {
+            return Response.json(
+                { error: "Request body must be a JSON object" },
+                { status: 400 }
+            );
+        }
+        const date = new Date(data.driveDate);
+        if (
+            typeof data.companyName !== "string" ||
+            !data.companyName.trim() ||
+            typeof data.role !== "string" ||
+            !data.role.trim() ||
+            typeof data.eligibleBranch !== "string" ||
+            !data.eligibleBranch.trim() ||
+            typeof data.driveDate !== "string" ||
+            !data.driveDate.trim() ||
+            Number.isNaN(date.getTime())
+        ) {
+            return Response.json(
+                {
+                    error:
+                        "Company name, role, eligible branch, and a valid drive date are required",
+                },
                 { status: 400 }
             );
         }
