@@ -32,7 +32,7 @@ Install the following before running the project:
 ### 1. Clone the repository
 
 ```bash
-git clone YOUR_PUBLIC_GITHUB_REPOSITORY_URL
+git clone https://github.com/Jaiinderveer/placement-drive-manager
 cd placement-drive-manager
 ```
 
