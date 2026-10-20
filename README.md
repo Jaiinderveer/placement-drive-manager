@@ -1,42 +1,40 @@
 # Placement Drive Manager
 
-A full-stack web application for managing campus placement drives at Guru Nanak Dev Engineering College (GNDEC), Ludhiana.
+A full-stack web application for managing campus placement drives at **Guru Nanak Dev Engineering College (GNDEC), Ludhiana**. The application allows users to add placement drives, view saved records, and persist data in PostgreSQL.
 
 ## Features
 
-- Add placement drives with company name, job role, date and time, and eligible branch.
-- Optionally specify minimum CGPA and job type.
-- View saved placement drives in a dashboard.
-- Validate required fields, CGPA, and job type.
-- Store records persistently in PostgreSQL using Prisma ORM.
+- Add a placement drive with company name, role, date and time, and eligible branch.
+- Optionally set a minimum CGPA and job type.
+- View saved drives in a responsive dashboard.
+- Validate required fields, CGPA (0–10), and job type.
+- Sort placement drives by drive date.
+- Persist records in PostgreSQL using Prisma ORM and migrations.
 - Display loading, empty, and submission feedback states.
-- Responsive UI built with Next.js, React, and Tailwind CSS.
 
 ## Tech Stack
 
 - **Frontend:** Next.js App Router, React, Tailwind CSS
-- **Backend:** Next.js Route Handlers
+- **Backend / API:** Next.js Route Handlers
 - **Database:** PostgreSQL
 - **ORM:** Prisma
 
 ## Prerequisites
 
-Install the following before running the project:
+Install the following:
 
 - Node.js and npm
 - PostgreSQL
 - Git
 
-## Setup
+## Getting Started
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Jaiinderveer/placement-drive-manager
+git clone https://github.com/Jaiinderveer/placement-drive-manager.git
 cd placement-drive-manager
 ```
-
-Replace the URL above with your actual repository URL.
 
 ### 2. Install dependencies
 
@@ -44,64 +42,82 @@ Replace the URL above with your actual repository URL.
 npm install
 ```
 
-### 3. Configure environment variables
+### 3. Configure the database
 
-Create a `.env` file in the project root and add your PostgreSQL connection string:
+Create a PostgreSQL database named `placement_manager`. Then create a `.env` file in the project root with your own PostgreSQL credentials:
 
 ```env
 DATABASE_URL="postgresql://USERNAME:PASSWORD@localhost:5432/placement_manager?schema=public"
 ```
 
-Replace `USERNAME` and `PASSWORD` with your local PostgreSQL credentials. Never commit your real `.env` file or database password.
+Replace `USERNAME` and `PASSWORD` with your local PostgreSQL username and password. You can refer to `.env.example` for the placeholder format. **Do not commit your real `.env` file or database credentials.**
 
-### 4. Apply database migrations
+### 4. Apply migrations and generate the Prisma client
 
 ```bash
 npx prisma migrate deploy
 npx prisma generate
 ```
 
-### 5. Start the development server
+### 5. Run the development server
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## API Documentation
 
-### `GET /api/drives`
+Base URL for local development: `http://localhost:3000`
 
-Returns placement drives ordered by drive date in ascending order.
+### GET `/api/drives`
 
-**Success response:** `200 OK`
+Returns all placement drives ordered by `driveDate` in ascending order.
 
-Returns a JSON array of placement drive records.
+**Success:** `200 OK`
 
-**Error response:** `500 Internal Server Error` if the server cannot retrieve the records.
+Example response:
 
-### `POST /api/drives`
+```json
+[
+  {
+    "id": "generated-id",
+    "companyName": "Google",
+    "role": "Software Engineer Intern",
+    "driveDate": "2026-11-15T10:00:00.000Z",
+    "eligibleBranch": "CSE",
+    "minCGPA": 7.5,
+    "jobType": "Internship",
+    "createdAt": "2026-10-20T10:00:00.000Z",
+    "updatedAt": "2026-10-20T10:00:00.000Z"
+  }
+]
+```
 
-Creates a new placement drive.
+The values above are illustrative examples. If the database has no records, the endpoint returns an empty array (`[]`). A server/database failure returns `500 Internal Server Error`.
+
+### POST `/api/drives`
+
+Creates and saves a placement drive.
 
 **Required fields**
 
-| Field | Type |
-|---|---|
-| `companyName` | String |
-| `role` | String |
-| `driveDate` | ISO-compatible date/time string |
-| `eligibleBranch` | String |
+| Field | Type | Description |
+| --- | --- | --- |
+| `companyName` | String | Company name |
+| `role` | String | Job role |
+| `driveDate` | Date/time string | Date and time of the drive |
+| `eligibleBranch` | String | Eligible branch, e.g. CSE |
 
 **Optional fields**
 
 | Field | Type | Accepted values |
-|---|---|---|
-| `minCGPA` | Number | 0–10 |
+| --- | --- | --- |
+| `minCGPA` | Number | From 0 to 10 |
 | `jobType` | String | `Internship`, `Full-Time`, `Other` |
 
-**Example request**
+**Example request body**
 
 ```json
 {
@@ -116,17 +132,42 @@ Creates a new placement drive.
 
 **Responses**
 
-- `201 Created` — record successfully created.
-- `400 Bad Request` — required fields or validation rules are not satisfied.
-- `500 Internal Server Error` — unexpected server/database error.
+| Status | Meaning |
+| --- | --- |
+| `201 Created` | Placement drive created successfully; response contains the created record. |
+| `400 Bad Request` | Required fields are missing, date is invalid, or an optional value fails validation. |
+| `500 Internal Server Error` | Unexpected server/database error. |
 
-## Database
+## Testing the API with Postman
 
-The application uses a PostgreSQL database managed through Prisma. The schema and migration files are included in the repository so the database structure can be recreated.
+1. Start the app using `npm run dev`.
+2. For **GET**, send a request to `http://localhost:3000/api/drives`. Expect `200 OK` and a JSON array.
+3. For **POST**, use the same URL, select **Body → raw → JSON**, paste the example request body above, and click **Send**. Expect `201 Created`.
+4. To test validation, change `minCGPA` to `11` and send the POST request again. Expect `400 Bad Request`.
 
 ## Screenshots
 
-Add screenshots of the dashboard, saved placement drives, and API tests here before submission.
+Save your screenshots in a folder named `screenshots` at the project root, using these filenames. The images will appear here once you add them to the repository.
+
+### Dashboard
+
+![Placement Drive Manager dashboard](screenshots/dashboard.png)
+
+### GET all placement drives — 200 OK
+
+![Postman GET drives response](screenshots/get-drives.png)
+
+### POST placement drive — 201 Created
+
+![Postman successful POST response](screenshots/post-success.png)
+
+### Validation error — 400 Bad Request
+
+![Postman validation error response](screenshots/validation-error.png)
+
+## Database
+
+The database schema and migration files are included in the `prisma/` directory. Prisma migrations allow the PostgreSQL schema to be set up on another machine.
 
 ## Author
 
