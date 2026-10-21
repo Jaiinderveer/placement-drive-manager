@@ -20,34 +20,52 @@ export default function Home() {
   const filteredDrives = drives.filter(drive=>{return drive.companyName.toLowerCase().trim().includes(search.toLowerCase().trim()) || drive.eligibleBranch.toLowerCase().trim().includes(search.toLowerCase().trim())})
   const paginatedDrives = filteredDrives.slice(startIndex,startIndex+pageSize);
   const maxSize = Math.ceil(filteredDrives.length/pageSize);
+
   async function fetchDrives() {
-    setFetchLoading(true)
-    setFetchError("")
+    setFetchError("");
+
     try {
-      const response = await fetch("/api/drives")
+      const response = await fetch("/api/drives");
+
       if (!response.ok) {
-        throw new Error("Unable to Load Placement Drives")
+        throw new Error("Unable to load placement drives");
       }
-      const data = await response.json()
-      setDrives(data)
+
+      const data = await response.json();
+      setDrives(data);
     } catch {
-      setFetchError("Unable to load placement drives. Please try again.")
+      setFetchError("Unable to load placement drives. Please try again.");
     } finally {
-      setFetchLoading(false)
+      setFetchLoading(false);
     }
   }
+
+  useEffect(() => {
+    async function loadDrives() {
+      try {
+        const response = await fetch("/api/drives");
+
+        if (!response.ok) {
+          throw new Error("Unable to load placement drives");
+        }
+
+        const data = await response.json();
+        setDrives(data);
+      } catch {
+        setFetchError("Unable to load placement drives. Please try again.");
+      } finally {
+        setFetchLoading(false);
+      }
+    }
+
+    loadDrives();
+  }, []);
 
   function handleSearch(value){
     setSearch(value)
     setCurrentPage(1)
   }
 
-  useEffect(()=>{
-    fetchDrives()
-},[]);
-  useEffect(()=>{
-    setCurrentPage(1)
-  },[search])
   async function handleSubmit(event) {
     event.preventDefault();
 
