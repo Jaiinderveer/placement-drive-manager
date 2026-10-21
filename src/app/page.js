@@ -39,6 +39,7 @@ export default function Home() {
 
   function handleSearch(value){
     setSearch(value)
+    setCurrentPage(1)
   }
 
   useEffect(()=>{
@@ -79,6 +80,7 @@ export default function Home() {
         setRole("")
         setMinCGPA("")
         setJobType("")
+        setCurrentPage(1);
       }
       else{
         setMessage("Invalid, Try Again!")
@@ -114,7 +116,7 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8 sm:py-10">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-8 sm:py-10">
         {/* Page intro */}
         <div className="mb-8">
           <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-blue-700">
@@ -305,7 +307,7 @@ export default function Home() {
           </section>
 
           {/* Drives list */}
-          <section className="min-w-0 max-h-[720px] lg:col-span-3 flex flex-col h-full">
+          <section className="min-w-0 lg:col-span-3 flex flex-col">
             <div className="mb-5 flex items-end justify-between gap-3">
               <div>
                 <h3 className="text-xl font-bold">Placement opportunities</h3>
@@ -371,7 +373,7 @@ export default function Home() {
                     </p>
                   </div>
                 ) : (
-              <div className="flex flex-col flex-1 gap-4">
+              <div className="flex flex-col gap-4">
                 {paginatedDrives.map((drive) => (
                   <article
                     key={drive.id}
@@ -445,30 +447,38 @@ export default function Home() {
                 ))}
               </div>
             )}
-            {!fetchLoading && !fetchError && filteredDrives.length > 0 && (
-                <div className="flex mt-auto justify-between W-full items-center pt-6">
-                          <button
-                            disabled = {currentPage === 1}
-                            onClick={()=>setCurrentPage(currentPage-1)}
-                            className="flex ml-30 w-40 items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-60"
-                            > 
-                          Previous  
-                          </button>
-                          <p className="mt-2 text-xl font-bold">Page {currentPage} of {maxSize}</p>
-                          <button
-                            disabled = {currentPage === maxSize}
-                            onClick={()=>setCurrentPage(currentPage+1)}
-                            className="flex mr-30 w-40 items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-60"
-                          >
-                          Next
-                          </button>
-                </div>
+
+            {maxSize > 0 && (
+              <div className="mt-6 grid grid-cols-2 items-center gap-3 border-t border-slate-200 pt-5 sm:flex sm:justify-between">
+                <p className="col-span-2 text-center text-sm font-semibold text-slate-600 sm:col-span-1 sm:order-2">
+                  Page {currentPage} of {maxSize}
+                </p>
+
+                <button
+                  type="button"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((page) => page - 1)}
+                  className="w-full rounded-xl bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-40 sm:order-1 sm:w-auto sm:min-w-28"
+                >
+                  Previous
+                </button>
+
+                <button
+                  type="button"
+                  disabled={currentPage >= maxSize}
+                  onClick={() => setCurrentPage((page) => page + 1)}
+                  className="w-full rounded-xl bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-40 sm:order-3 sm:w-auto sm:min-w-28"
+                >
+                  Next
+                </button>
+              </div>
             )}
+
           </section>
         </div>
 
         {/* Footer */}
-        <footer className="mt-12 border-t border-slate-200 pt-6 text-center text-xs text-slate-500">
+        <footer className="mt-8 border-t border-slate-200 pt-6 text-center text-xs leading-6 text-slate-500 sm:mt-12">
           PlacementHub · Guru Nanak Dev Engineering College · Placement Drive Manager
         </footer>
       </div>
