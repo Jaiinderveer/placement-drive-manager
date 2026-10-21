@@ -11,7 +11,7 @@ export async function GET(){
             }
         );
         return Response.json(drives)
-    }catch(err){
+    }catch{
         return Response.json(
             { error: "Something went wrong" },
             { status: 500 }
@@ -82,7 +82,7 @@ export async function POST(request){
             }
         })
         return Response.json(newDrive,{status:201});
-    }catch(err){
+    }catch{
         return Response.json(
             { error: "Something went wrong" },
             { status: 500 }

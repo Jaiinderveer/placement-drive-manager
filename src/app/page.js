@@ -13,6 +13,13 @@ export default function Home() {
   const [drives, setDrives] = useState([]);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [fetchError, setFetchError] = useState("");
+  const [search,setSearch] = useState("");
+  const [currentPage,setCurrentPage] = useState(1);
+  const pageSize = 2;
+  const startIndex = (currentPage-1)*pageSize
+  const filteredDrives = drives.filter(drive=>{return drive.companyName.toLowerCase().trim().includes(search.toLowerCase().trim()) || drive.eligibleBranch.toLowerCase().trim().includes(search.toLowerCase().trim())})
+  const paginatedDrives = filteredDrives.slice(startIndex,startIndex+pageSize);
+  const maxSize = Math.ceil(filteredDrives.length/pageSize);
   async function fetchDrives() {
     setFetchLoading(true)
     setFetchError("")
@@ -29,9 +36,17 @@ export default function Home() {
       setFetchLoading(false)
     }
   }
+
+  function handleSearch(value){
+    setSearch(value)
+  }
+
   useEffect(()=>{
     fetchDrives()
 },[]);
+  useEffect(()=>{
+    setCurrentPage(1)
+  },[search])
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -68,7 +83,7 @@ export default function Home() {
       else{
         setMessage("Invalid, Try Again!")
       }
-    } catch (error) {
+    } catch{
       setMessage("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
@@ -275,7 +290,6 @@ export default function Home() {
               >
                 {loading ? "Saving drive..." : "+ Add placement drive"}
               </button>
-
               {message && (
                 <p
                   role="status"
@@ -291,7 +305,7 @@ export default function Home() {
           </section>
 
           {/* Drives list */}
-          <section className="min-w-0 lg:col-span-3">
+          <section className="min-w-0 max-h-[720px] lg:col-span-3 flex flex-col h-full">
             <div className="mb-5 flex items-end justify-between gap-3">
               <div>
                 <h3 className="text-xl font-bold">Placement opportunities</h3>
@@ -303,7 +317,15 @@ export default function Home() {
                 {drives.length} {drives.length === 1 ? "drive" : "drives"}
               </span>
             </div>
-
+            <div className="flex">
+              <input
+                type="text"
+                placeholder="Search Company or Branch..."
+                value={search}
+                onChange={(event) => handleSearch(event.target.value)}
+                className="w-full rounded-xl mb-4 border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-50"
+              />
+            </div>
             {fetchLoading ? (
               <div className="flex flex-col items-center rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center">
                 <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-blue-700" />
@@ -338,9 +360,19 @@ export default function Home() {
                   it listed here.
                 </p>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {drives.map((drive) => (
+                ) : filteredDrives.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-2xl">
+                      ▤
+                    </div>
+                    <h4 className="font-semibold">No matching placement drives</h4>
+                    <p className="mx-auto mt-2 max-w-xs text-sm leading-6 text-slate-500">
+                      Search a valid record and try again!
+                    </p>
+                  </div>
+                ) : (
+              <div className="flex flex-col flex-1 gap-4">
+                {paginatedDrives.map((drive) => (
                   <article
                     key={drive.id}
                     className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-200 hover:shadow-md sm:p-6"
@@ -413,6 +445,23 @@ export default function Home() {
                 ))}
               </div>
             )}
+                <div className="flex mt-auto justify-between W-full items-center pt-6">
+                          <button
+                            disabled = {currentPage === 1}
+                            onClick={()=>setCurrentPage(currentPage-1)}
+                            className="flex ml-30 w-40 items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-60"
+                            > 
+                          Previous  
+                          </button>
+                          <p className="mt-2 text-xl font-bold">Page {currentPage} of {maxSize}</p>
+                          <button
+                            disabled = {currentPage === maxSize}
+                            onClick={()=>setCurrentPage(currentPage+1)}
+                            className="flex mr-30 w-40 items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                          Next
+                          </button>
+                </div>
           </section>
         </div>
 
