@@ -445,6 +445,7 @@ export default function Home() {
                 ))}
               </div>
             )}
+            {!fetchLoading && !fetchError && filteredDrives.length > 0 && (
                 <div className="flex mt-auto justify-between W-full items-center pt-6">
                           <button
                             disabled = {currentPage === 1}
@@ -462,6 +463,7 @@ export default function Home() {
                           Next
                           </button>
                 </div>
+            )}
           </section>
         </div>
 
