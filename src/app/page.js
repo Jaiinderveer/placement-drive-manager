@@ -43,17 +43,21 @@ export default function Home() {
   useEffect(() => {
     async function loadDrives() {
       try {
-        setFetchLoading(true);
-        setFetchError("");
+        const response = await fetch("/api/drives");
 
-        const data = await fetchDrives();
+        if (!response.ok) {
+          throw new Error("Unable to load placement drives");
+        }
+
+        const data = await response.json();
         setDrives(data);
-      } catch (error) {
-        setFetchError(error.message);
+      } catch {
+        setFetchError("Unable to load placement drives. Please try again.");
       } finally {
         setFetchLoading(false);
       }
     }
+
     loadDrives();
   }, []);
 
