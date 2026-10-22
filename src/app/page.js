@@ -391,7 +391,7 @@ export default function Home() {
                     </p>
                   </div>
                 ) : (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 lg:min-h-[500px] sm: min-h-[720px] ">
                 {paginatedDrives.map((drive) => (
                   <article
                     key={drive.id}
